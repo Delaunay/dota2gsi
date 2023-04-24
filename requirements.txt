@@ -1,0 +1,3 @@
+importlib_resources
+Jinja2
+flask
