@@ -60,25 +60,17 @@ def draft():
     return draft
     
 
-def update_worldstate(data):
-    if False:
-        print('New match')
-        reset()
-        worldstate.provider.update(data['provider'])
-
-    map = data.get('map', {})
-    worldstate.map.update(map)
-
-    # Update player info
+def update_character(data):
     player = data.get('player', {})
-    team = player.get('team_slot')
-    slot = player.get('player_slot')
+
+    team = 0 if player.get('team_name') == 'radiant' else 1
+    slot = player.get('team_slot')
 
     if team is not None and slot is not None:
         character: Character = worldstate.character(team, slot)
-        character['player'].update(player)
 
-        # character['dir'].append()
+        player = data.get('player', {})
+        character['player'].update(player)
 
         hero = data.get('hero', {})
         character['hero'].update(hero)
@@ -90,6 +82,46 @@ def update_worldstate(data):
         items = data.get('items', dict())
         for k, item in items.items():
             character['items'][k].update(item)
+
+
+def update_worldstate(data):
+    if False:
+        print('New match')
+        reset()
+        worldstate.provider.update(data['provider'])
+
+    map = data.get('map', {})
+    worldstate.map.update(map)
+
+    is_observing = data.get('player', {}).get('team2') is not None
+
+    if is_observing:
+        # Observing
+        # we have all the player info
+        for t in ['team2', 'team3']:
+            # 
+            p = data.get('player', {}).get(t, {})
+            h = data.get('hero', {}).get(t, {})
+            i = data.get('items', {}).get(t, {})
+            a = data.get('abilities', {}).get(t, {})
+
+            for k in p.keys():
+                player = p.get(k, {})
+                hero = h.get(k, {})
+                item = i.get(k, {})
+                abilities = a.get(k, {})
+
+                built = dict(
+                    player=player,
+                    hero=hero,
+                    items=item,
+                    abilities=abilities
+                )
+                update_character(built)
+    else:
+        # Live Match
+        # We only have the main player data
+        update_character(data)
         
     
 

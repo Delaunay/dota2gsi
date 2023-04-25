@@ -150,6 +150,7 @@ def make_team():
                 ability3=dict(), 
                 ability4=dict(), 
                 ability5=dict(),
+                ability6=dict(),
              ), 
              items=dict(
                 slot0=dict(), 
@@ -184,7 +185,4 @@ class WorldState:
     dire: List[Character] = field(default_factory=make_team)
 
     def character(self, team, slot):
-        print(team, slot)
-        team = team if team < 3 else team - 3
-        slot = slot if slot < 5 else slot - 5
         return [self.radiant, self.dire][team][slot]
