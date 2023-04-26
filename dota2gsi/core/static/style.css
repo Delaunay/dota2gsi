@@ -24,6 +24,7 @@
 
 .neutral {
     margin: 2px;
+    border-radius: 50%;
 }
 
 .txt-overlay {
@@ -130,4 +131,12 @@
 
 .t1-s4 {
     background-color: brown;
+}
+
+.team {
+    width: 50%;
+}
+
+.ability-col {
+    width: 50%;
 }

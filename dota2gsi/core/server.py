@@ -137,6 +137,7 @@ def update_dota2state():
     unique.add(sha)
 
     # print(request.data.decode('utf-8'))
+
     data = request.json
     # print(data)
     if save_replay:

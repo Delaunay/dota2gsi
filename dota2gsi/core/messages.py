@@ -151,6 +151,7 @@ def make_team():
                 ability4=dict(), 
                 ability5=dict(),
                 ability6=dict(),
+                ability7=dict(),
              ), 
              items=dict(
                 slot0=dict(), 

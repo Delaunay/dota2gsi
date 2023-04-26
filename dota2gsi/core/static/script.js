@@ -23,7 +23,6 @@ class Character {
         }
         if (has_values(char.hero)) {
             this.portrait = document.getElementById("portrait-" + this.id);
-            console.log(char.hero.name)
 
             if (this.name == null && char.hero.hasOwnProperty('name')) {
                 this.name = char.hero.name.substring(namespace.length)
@@ -69,7 +68,7 @@ class Character {
                 var obj = char.items[prop];
                 
                 if (has_values(obj) && obj.name !== 'empty') {
-                    console.log(obj.name, prop + "-" + this.id, item)
+                
                     if (item !== null) { 
                         item.src = "/static/items/" + obj.name.substring(5) + "_lg.png";
                     }
@@ -84,13 +83,21 @@ class Character {
             }
         }
        
-        if (Object.keys(char.abilities).length !== 0) {
+        if (has_values(char.abilities)) {
             for (const prop in char.abilities) {
+
                 var ability = document.getElementById(prop + "-" + this.id);
                 var obj = char.abilities[prop];
+                var ignore = false;
 
-                if (has_values(obj)) {
-                    ability.src = "/static/items/yasha_lg.png";
+                if (obj.name === 'plus_high_five' || obj.name === 'plus_guild_banner') {
+                    ignore = true;
+                }
+            
+                if (!ignore && has_values(obj)) {
+                    // var n = obj.name.substring(this.name.length + 1)
+                    var n = obj.name.replace(/\_/gi, '-')
+                    ability.src = "/static/abilities/" + n + ".webp";
 
                     if (obj.can_cast) {
                         ability.style.filter = null;
@@ -98,6 +105,7 @@ class Character {
                         ability.style.filter = 'grayscale(100%)';
                     }
                 } else {
+                    ability.style.display = 'none';
                     ability.src = "/static/items/empty.png";
                 }
             }
