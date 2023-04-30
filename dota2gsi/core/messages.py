@@ -15,7 +15,7 @@ class Provider:
 class Map:
     name: str
     matchid: str
-    gmae_time: int
+    game_time: int
     clock_time: int
     daytime: bool 
     nightstalker_night: False

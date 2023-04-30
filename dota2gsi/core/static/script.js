@@ -2,6 +2,29 @@
 
 var namespace = "npc_dota_hero_"
 
+var kda = document.getElementById("kda");
+var ld = document.getElementById("ld");
+var nw = document.getElementById("nw");
+var xpm = document.getElementById("xpm");
+var gpm = document.getElementById("gpm");
+
+var day = document.getElementById("day");
+var siege = document.getElementById("siege");
+var power = document.getElementById("power");
+var water = document.getElementById("water");
+var bounty = document.getElementById("bounty");
+var wisdom = document.getElementById("wisdom");
+var tormentors = document.getElementById("tormentors");
+var stack = document.getElementById("stack");
+var slp = document.getElementById("slp");
+var oflp = document.getElementById("oflp");
+var roshan = document.getElementById("roshan");
+
+function has_values(obj) {
+    return Object.keys(obj).length !== 0
+}
+
+
 class Character {
     constructor(id) {
         this.id = id
@@ -17,10 +40,7 @@ class Character {
         // 
     }
 
-    update(char) {
-        function has_values(obj) {
-            return Object.keys(obj).length !== 0
-        }
+    update(map, char) {
         if (has_values(char.hero)) {
             this.portrait = document.getElementById("portrait-" + this.id);
 
@@ -90,15 +110,15 @@ class Character {
                 var obj = char.abilities[prop];
                 var ignore = false;
 
-                if (obj.name === 'plus_high_five' || obj.name === 'plus_guild_banner') {
+                if (obj.name === 'plus_high_five' || obj.name === 'plus_guild_banner' || !has_values(obj)) {
                     ignore = true;
+                    console.log('Ingore ' + prop)
                 }
-            
-                if (!ignore && has_values(obj)) {
+                if (!ignore) {
                     // var n = obj.name.substring(this.name.length + 1)
                     var n = obj.name.replace(/\_/gi, '-')
                     ability.src = "/static/abilities/" + n + ".webp";
-
+                    ability.style.display = 'inline-block';
                     if (obj.can_cast) {
                         ability.style.filter = null;
                     } else {
@@ -111,7 +131,17 @@ class Character {
             }
         }
 
-        if (Object.keys(char.player).length !== 0) {
+        if (has_values(char.player)) {
+            kda.innerHTML = char.player.kills + ' / ' + char.player.deaths + ' / ' + char.player.assists;
+            ld.innerHTML = char.player.last_hits + ' / ' + char.player.denies ;
+            // var val = char.player.gold_reliable + char.player.gold_unreliable;
+            // var val2 = char.player.gold_from_creep_kills + char.player.gold_from_hero_kills + char.player.gold_from_income + char.player.gold_from_shared;
+            nw.innerHTML =  (char.player.gpm * Math.max(map.clock_time, 1) / 60 + 600).toFixed(0);
+
+            //    + ' / ' + val + ' / ' + val2 + ' / ' + char.player.gold
+            //    ;
+            gpm.innerHTML = char.player.gpm;
+            xpm.innerHTML = char.player.xpm;
         }
     }
 };
@@ -138,17 +168,43 @@ players = [radiant, dire]
 function update_state(gamestate) {
     for(var i = 0; i < 5; i++) {
         try {
-            dire[i].update(gamestate.dire[i]);
+            dire[i].update(gamestate.map, gamestate.dire[i]);
         } catch (err) {
             console.log(err);
         }
     }
     for(var i = 0; i < 5; i++) {
         try {
-            radiant[i].update(gamestate.radiant[i]);
+            radiant[i].update(gamestate.map, gamestate.radiant[i]);
         } catch (err) {
             console.log(err);
         }
+    }
+
+    update_map(gamestate.map)
+}
+
+function update_map(map) {
+    function rune_time(min) {
+        return min * 60 - map.clock_time % (min * 60)
+    }
+    if (has_values(map)) {
+        var minutes = map.clock_time / 60;
+
+        var is_day = Math.trunc(minutes / 5) % 2 == 0 && map.clock_time > 0;
+        var seconds = map.clock_time % 60;
+
+        day.innerHTML        = is_day + " | " + ((map.clock_time % (5 * 60)) / (5 * 60) * 100).toFixed(0) + " %";
+        siege.innerHTML      = rune_time(5);
+        power.innerHTML      = minutes > 6 ? rune_time(2) : rune_time(6); // Spawn after 6, respawns every 2 minutes
+        bounty.innerHTML     = rune_time(3);                              // Spawns every 3 minutes
+        wisdom.innerHTML     = rune_time(7) ;                              // Spawns every 7 minutes
+        tormentors.innerHTML = minutes > 20 ? rune_time(10): rune_time(20);
+        stack.innerHTML      = minutes > 0 ? Math.max(55 - seconds, 0): -1;
+        water.innerHTML      = minutes > 6.5 ? -1 : rune_time(2);
+        roshan.innerHTML     = is_day ? "Rad/Bot": "Dire/Top";
+        slp.innerHTML        = Math.min(17 + 60 - map.clock_time % (17 + 60), Math.max(48 - seconds, 0));
+        oflp .innerHTML      = Math.min(17 + 60 - map.clock_time % (17 + 60), Math.max(48 - seconds, 0));
     }
 }
 
@@ -178,6 +234,8 @@ function populate_heroes_from_template() {
         req.responseType = 'json';
         req.onload = function() {
             update_state(req.response)
+
+            // Fixme: use websocket to get update directly from the server
             setInterval(
                 request_update,
                 500,

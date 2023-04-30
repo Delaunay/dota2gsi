@@ -16,9 +16,20 @@
         {% include "map.html"  %}
     </div>
         <div class="col-gsi">
-        {% include "heroes.html" %}
-    </div>
-    </div>
+            {% include "heroes.html" %}
 
+            <div class="row-gsi">
+                <div class="col-gsi">
+                    {% include "stats.html" %}
+                </div>
+
+                <div class="col-gsi">
+                    {% include "events.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
 {% endblock %}

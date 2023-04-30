@@ -13,7 +13,8 @@
 
 .ability {
     display: inline-block;
-    height: 32px;
+    max-width: 32px;
+    max-height: 32px;
 }
 
 .item {
@@ -22,9 +23,17 @@
     width: 32px;
 }
 
+.hidden {
+    display: none;
+    height: 32px;
+    width: 32px;
+}
+
 .neutral {
     margin: 2px;
     border-radius: 50%;
+    height: 24px;
+    width: 24px;
 }
 
 .txt-overlay {
@@ -139,4 +148,28 @@
 
 .ability-col {
     width: 50%;
+}
+
+.stat-name {
+    width: 50px;
+    font-weight: bold;
+}
+
+.stat-header {
+    font-weight: bold;
+}
+
+.stat-col {
+    width: 100px;
+    text-align: end;
+}
+
+.event-name {
+    width: 150px;
+    text-align: end;
+    font-weight: bold;
+}
+.event-col {
+    width: 100px;
+    text-align: end;
 }
